@@ -6,9 +6,14 @@ export const apiClient = axios.create({
 });
 
 let token: string | null = null;
+let onUnauthorized: (() => void) | null = null;
 
 export function setToken(t: string | null) {
   token = t;
+}
+
+export function registerUnauthorizedHandler(handler: () => void) {
+  onUnauthorized = handler;
 }
 
 apiClient.interceptors.request.use((config) => {
@@ -22,7 +27,7 @@ apiClient.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
-      setToken(null);
+      onUnauthorized?.();
     }
     return Promise.reject(err);
   },
