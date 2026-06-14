@@ -32,14 +32,12 @@ export class AdminLinksController {
   constructor(private readonly linksService: LinksService) {}
 
   @Get()
-  @ApiOperation({ summary: 'List all links (admin)' })
   @ApiOkResponse({ type: [Link] })
   findAll(): Promise<Link[]> {
     return this.linksService.findAll(false);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new link' })
   @ApiCreatedResponse({ type: Link })
   create(@Body() dto: CreateLinkDto): Promise<Link> {
     return this.linksService.create(dto);

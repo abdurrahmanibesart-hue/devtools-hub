@@ -7,7 +7,6 @@ import { LinksModule } from './links/links.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
 import { HealthModule } from './health/health.module';
-import { GraphqlModule } from './graphql/graphql.module';
 
 @Module({
   imports: [
@@ -25,7 +24,6 @@ import { GraphqlModule } from './graphql/graphql.module';
     AuthModule,
     AdminModule,
     HealthModule,
-    GraphqlModule,
   ],
 })
 export class AppModule {}

@@ -12,7 +12,7 @@ export function setToken(t: string | null) {
   token = t;
 }
 
-export function registerUnauthorizedHandler(handler: () => void) {
+export function setLogoutHandler(handler: () => void) {
   onUnauthorized = handler;
 }
 

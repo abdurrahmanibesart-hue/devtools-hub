@@ -7,11 +7,11 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { AdminDoc, AdminSchema } from './schemas/admin.schema';
+import { Admin, AdminSchema } from './schemas/admin.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: AdminDoc.name, schema: AdminSchema }]),
+    MongooseModule.forFeature([{ name: Admin.name, schema: AdminSchema }]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({

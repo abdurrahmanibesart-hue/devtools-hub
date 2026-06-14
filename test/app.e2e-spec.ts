@@ -1,7 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { getModelToken } from '@nestjs/mongoose';
+import * as bcrypt from 'bcrypt';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
+import { Admin } from '../src/auth/schemas/admin.schema';
 
 const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL ?? 'admin@devtools.local';
 const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD ?? 'Admin123!';
@@ -22,10 +25,13 @@ describe('DevTools Hub (e2e)', () => {
     app.setGlobalPrefix('api', { exclude: ['health'] });
     await app.init();
 
-    // seed admin (idempotent)
-    await request(app.getHttpServer())
-      .post('/api/auth/setup')
-      .send({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD });
+    const adminModel = app.get(getModelToken(Admin.name));
+    if (!(await adminModel.findOne({ email: ADMIN_EMAIL }))) {
+      await adminModel.create({
+        email: ADMIN_EMAIL,
+        passwordHash: await bcrypt.hash(ADMIN_PASSWORD, 4),
+      });
+    }
 
     const loginRes = await request(app.getHttpServer())
       .post('/api/auth/login')
@@ -53,13 +59,6 @@ describe('DevTools Hub (e2e)', () => {
       .post('/api/auth/login')
       .send({ email: 'wrong@wrong.com', password: 'wrongpassword' })
       .expect(401);
-  });
-
-  it('POST /api/auth/setup → 409 (admin already exists)', () => {
-    return request(app.getHttpServer())
-      .post('/api/auth/setup')
-      .send({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD })
-      .expect(409);
   });
 
   it('GET /api/admin/links without token → 401', () => {

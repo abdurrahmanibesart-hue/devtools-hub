@@ -10,8 +10,4 @@ export default () => ({
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN ?? '7d',
   },
   bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS ?? '12', 10),
-  seed: {
-    adminEmail: process.env.SEED_ADMIN_EMAIL,
-    adminPassword: process.env.SEED_ADMIN_PASSWORD,
-  },
 });

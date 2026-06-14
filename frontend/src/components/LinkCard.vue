@@ -15,7 +15,7 @@
           {{ link.description }}
         </p>
         <span class="inline-block text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-300">
-          {{ link.category || 'General' }}
+          {{ link.category || 'Misc' }}
         </span>
       </div>
     </div>

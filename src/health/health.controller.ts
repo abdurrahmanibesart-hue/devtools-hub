@@ -1,12 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiExcludeController } from '@nestjs/swagger';
 import {
   HealthCheck,
   HealthCheckService,
   MongooseHealthIndicator,
 } from '@nestjs/terminus';
 
-@ApiTags('health')
+@ApiExcludeController()
 @Controller('health')
 export class HealthController {
   constructor(
@@ -16,7 +16,6 @@ export class HealthController {
 
   @Get()
   @HealthCheck()
-  @ApiOperation({ summary: 'Application health check' })
   check() {
     return this.health.check([() => this.mongoose.pingCheck('mongodb')]);
   }

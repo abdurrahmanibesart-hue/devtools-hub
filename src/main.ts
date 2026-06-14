@@ -15,7 +15,6 @@ async function bootstrap() {
   app.useLogger(app.get(PinoLogger));
 
   app.use(helmet({ contentSecurityPolicy: false }));
-  // same-origin in prod; dev allows any origin for Vite dev server
   app.enableCors({
     origin: process.env.NODE_ENV === 'development' ? '*' : false,
   });
@@ -32,7 +31,6 @@ async function bootstrap() {
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('DevTools Hub API')
-    .setDescription('Internal dev tools link management')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

@@ -32,22 +32,20 @@ export class LinksService {
       title: dto.title,
       url: dto.url,
       description: dto.description ?? '',
-      category: dto.category ?? 'General',
+      category: dto.category ?? 'Misc',
       isActive: dto.isActive ?? true,
     });
     return this.toLink(doc);
   }
 
   async update(id: string, dto: UpdateLinkDto): Promise<Link> {
-    const doc = await this.linkModel
-      .findByIdAndUpdate(id, dto, { new: true })
-      .exec();
+    const doc = await this.linkModel.findByIdAndUpdate(id, dto, { new: true });
     if (!doc) throw new NotFoundException(`Link ${id} not found`);
     return this.toLink(doc);
   }
 
   async remove(id: string): Promise<void> {
-    const result = await this.linkModel.findByIdAndDelete(id).exec();
+    const result = await this.linkModel.findByIdAndDelete(id);
     if (!result) throw new NotFoundException(`Link ${id} not found`);
   }
 

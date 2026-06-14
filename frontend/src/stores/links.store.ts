@@ -9,8 +9,6 @@ export interface Link {
   description: string;
   category: string;
   isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export const useLinksStore = defineStore('links', () => {
@@ -27,7 +25,7 @@ export const useLinksStore = defineStore('links', () => {
     }
   }
 
-  async function fetchAllLinks() {
+  async function fetchAdminLinks() {
     const res = await apiClient.get('/admin/links');
     links.value = res.data;
   }
@@ -50,5 +48,5 @@ export const useLinksStore = defineStore('links', () => {
     links.value = links.value.filter((l) => l.id !== id);
   }
 
-  return { links, loading, fetchPublicLinks, fetchAllLinks, createLink, updateLink, deleteLink };
+  return { links, loading, fetchPublicLinks, fetchAdminLinks, createLink, updateLink, deleteLink };
 });

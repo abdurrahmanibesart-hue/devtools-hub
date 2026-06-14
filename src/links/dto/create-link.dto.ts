@@ -19,17 +19,17 @@ export class CreateLinkDto {
   @IsUrl()
   url: string;
 
-  @ApiPropertyOptional({ example: 'Application metrics and dashboards' })
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   description?: string;
 
-  @ApiPropertyOptional({ enum: LinkCategory, default: LinkCategory.General })
+  @ApiPropertyOptional({ enum: LinkCategory, default: LinkCategory.Misc })
   @IsOptional()
   @IsEnum(LinkCategory)
   category?: LinkCategory;
 
-  @ApiPropertyOptional({ example: true, default: true })
+  @ApiPropertyOptional({ default: true })
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;

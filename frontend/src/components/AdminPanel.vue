@@ -131,29 +131,19 @@ const editingId = ref<string | null>(null);
 const saving = ref(false);
 const formError = ref('');
 
-const CATEGORIES = [
-  'General',
-  'Monitoring',
-  'CI/CD',
-  'Documentation',
-  'Infrastructure',
-  'Source Control',
-  'Project Management',
-  'Security',
-  'Analytics',
-];
+const CATEGORIES = ['Misc', 'Monitoring', 'CI/CD', 'Docs', 'Infra'];
 
 const defaultForm = () => ({
   title: '',
   url: '',
   description: '',
-  category: 'General',
+  category: 'Misc',
   isActive: true,
 });
 
 const form = ref(defaultForm());
 
-onMounted(() => store.fetchAllLinks());
+onMounted(() => store.fetchAdminLinks());
 
 function openCreate() {
   editingId.value = null;

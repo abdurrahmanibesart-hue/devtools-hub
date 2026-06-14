@@ -1,22 +1,17 @@
-import {
-  ConflictException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { AdminDoc, AdminDocument } from './schemas/admin.schema';
+import { Admin, AdminDocument } from './schemas/admin.schema';
 import { LoginDto } from './dto/login.dto';
-import { SetupDto } from './dto/setup.dto';
 import { TokenResponseDto } from './dto/token-response.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(AdminDoc.name)
+    @InjectModel(Admin.name)
     private readonly adminModel: Model<AdminDocument>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -44,7 +39,7 @@ export class AuthService {
       });
       if (payload.type !== 'refresh') throw new UnauthorizedException();
 
-      const admin = await this.adminModel.findById(payload.sub).exec();
+      const admin = await this.adminModel.findById(payload.sub);
       if (!admin) throw new UnauthorizedException();
 
       const accessToken = this.jwtService.sign({
@@ -57,21 +52,13 @@ export class AuthService {
     }
   }
 
-  async setup(dto: SetupDto): Promise<{ message: string }> {
-    const exists = (await this.adminModel.countDocuments()) > 0;
-    if (exists) throw new ConflictException('Admin already exists');
-
-    const bcryptRounds = this.configService.get<number>('bcryptRounds') ?? 12;
-    const passwordHash = await bcrypt.hash(dto.password, bcryptRounds);
-    await this.adminModel.create({ email: dto.email, passwordHash });
-
-    return { message: 'admin created' };
-  }
-
   private signTokens(adminId: string, email: string): TokenResponseDto {
     const secret = this.configService.get<string>('jwt.secret');
 
-    const accessToken = this.jwtService.sign({ sub: adminId, email });
+    const accessToken = this.jwtService.sign(
+      { sub: adminId, email },
+      { secret },
+    );
     const refreshToken = this.jwtService.sign(
       { sub: adminId, type: 'refresh' },
       {

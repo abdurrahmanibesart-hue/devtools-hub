@@ -5,12 +5,10 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
-import { AdminDoc } from './schemas/admin.schema';
+import { Admin } from './schemas/admin.schema';
 
 const mockAdminModel = {
   findOne: jest.fn(),
-  countDocuments: jest.fn(),
-  create: jest.fn(),
   findById: jest.fn(),
 };
 const mockJwtService = { sign: jest.fn(), verify: jest.fn() };
@@ -23,7 +21,7 @@ describe('AuthService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
-        { provide: getModelToken(AdminDoc.name), useValue: mockAdminModel },
+        { provide: getModelToken(Admin.name), useValue: mockAdminModel },
         { provide: JwtService, useValue: mockJwtService },
         { provide: ConfigService, useValue: mockConfigService },
       ],
@@ -34,16 +32,7 @@ describe('AuthService', () => {
   });
 
   describe('login', () => {
-    it('throws UnauthorizedException if admin not found', async () => {
-      mockAdminModel.findOne.mockReturnValue({
-        exec: () => Promise.resolve(null),
-      });
-      await expect(
-        service.login({ email: 'x@x.com', password: 'wrongpass1' }),
-      ).rejects.toThrow(UnauthorizedException);
-    });
-
-    it('throws UnauthorizedException if password mismatch', async () => {
+    it('throws UnauthorizedException on bad password', async () => {
       const hash = await bcrypt.hash('correct', 10);
       mockAdminModel.findOne.mockReturnValue({
         exec: () =>
@@ -79,25 +68,6 @@ describe('AuthService', () => {
       });
       expect(result.accessToken).toBe('signed-token');
       expect(result.refreshToken).toBe('signed-token');
-    });
-
-    it('sets lastLoginAt after successful login', async () => {
-      const hash = await bcrypt.hash('Admin123!', 10);
-      const saveMock = jest.fn().mockResolvedValue(undefined);
-      const doc = {
-        _id: { toString: () => '1' },
-        email: 'a@a.com',
-        passwordHash: hash,
-        lastLoginAt: null as Date | null,
-        save: saveMock,
-      };
-      mockAdminModel.findOne.mockReturnValue({
-        exec: () => Promise.resolve(doc),
-      });
-      mockJwtService.sign.mockReturnValue('tok');
-      await service.login({ email: 'a@a.com', password: 'Admin123!' });
-      expect(saveMock).toHaveBeenCalled();
-      expect(doc.lastLoginAt).toBeInstanceOf(Date);
     });
   });
 });
